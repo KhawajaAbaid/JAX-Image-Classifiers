@@ -2,7 +2,7 @@ import numpy as np
 import math
 
 
-dataset = np.load("../datasets/mnist.npy")
+dataset = np.load("./datasets/mnist.npy")
 x, y = np.split(dataset, np.array([784, ]), axis=1)
 x = x.astype(np.float32) / 255.0
 del dataset
