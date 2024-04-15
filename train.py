@@ -6,7 +6,7 @@ import argparse
 from datasets.mnist import mnist_training_dataset
 
 
-_SUPPORTED_MODELS = ["lenet5",]
+_SUPPORTED_MODELS = ["lenet5", "alexnet"]
 
 
 parser = argparse.ArgumentParser(
@@ -27,6 +27,9 @@ args = parser.parse_args()
 if args.model == "lenet5":
     from LeNet5.model import LeNet5
     model = LeNet5()
+if args.model == "alexnet":
+    from AlexNet.model import AlexNet
+    model = AlexNet()
 else:
     raise ValueError(
         f"{args.model} is not supported. Please choose one of the following "
