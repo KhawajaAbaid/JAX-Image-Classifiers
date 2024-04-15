@@ -25,10 +25,10 @@ parser.add_argument("-lr", "--learning-rate", help="Learning rate to use.",
 args = parser.parse_args()
 
 if args.model == "lenet5":
-    from LeNet5.model import LeNet5
+    from lenet5.model import LeNet5
     model = LeNet5()
 if args.model == "alexnet":
-    from AlexNet.model import AlexNet
+    from alexnet.model import AlexNet
     model = AlexNet()
 else:
     raise ValueError(
