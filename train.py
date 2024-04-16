@@ -6,7 +6,7 @@ import argparse
 from datasets.mnist import mnist_training_dataset
 
 
-_SUPPORTED_MODELS = ["lenet5", "alexnet"]
+_SUPPORTED_MODELS = ["lenet5", "alexnet-mini", "vgg7"]
 
 
 parser = argparse.ArgumentParser(
@@ -27,9 +27,12 @@ args = parser.parse_args()
 if args.model == "lenet5":
     from lenet5.model import LeNet5
     model = LeNet5()
-if args.model == "alexnet":
-    from alexnet.model import AlexNet
-    model = AlexNet()
+elif args.model == "alexnet-mini":
+    from alexnet.model import AlexNetMini
+    model = AlexNetMini()
+elif args.model == "vgg7":
+    from vgg.model import VGG7
+    model = VGG7()
 else:
     raise ValueError(
         f"{args.model} is not supported. Please choose one of the following "
@@ -48,13 +51,20 @@ print(f"Training {model.__class__.__name__} with the following configuration:\n"
 
 
 key = random.PRNGKey(1337)
-params = model.init(key, jnp.ones((1, 28, 28, 1)))
+if args.model == "alexnet-mini":
+    params = model.init(key, jnp.ones((1, 28, 28, 1)), training=False)
+else:
+    params = model.init(key, jnp.ones((1, 28, 28, 1)))
 tx = optax.adam(learning_rate=LEARNING_RATE)
 opt_state = tx.init(params)
 
 
 def crossentropy_loss(params, x_batched, y_batched):
-    y_pred_batched = model.apply(params, x_batched)
+    if args.model == "alexnet-mini":
+        y_pred_batched = model.apply(params, x_batched, training=True,
+                                     rngs={"dropout": jax.random.PRNGKey(12)})
+    else:
+        y_pred_batched = model.apply(params, x_batched)
 
     def loss_fn(y, y_pred):
         y = nn.one_hot(y, 10)
